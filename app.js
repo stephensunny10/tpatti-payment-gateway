@@ -5,13 +5,13 @@ const bodyParser = require("body-parser");
 const crypto = require("crypto");
 const Razorpay = require("razorpay");
 var MongoClient = require('mongodb').MongoClient;
-var uri = "mongodb+srv://ludofirst:kargan82@ludo.gyzkr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+var uri = "mongodb+srv://john:9UmSVdNkiT4nJRzB@cluster0.vdojp.mongodb.net/teenpatti?retryWrites=true&w=majority";
 
 dotenv.config();
 let app = express();
 const instance = new Razorpay({
-  key_id: "rzp_test_zJL9AiBPgD6OMg",
-  key_secret: "tqfWa57F8piYzBJDHQJadJcm",
+  key_id: "rzp_test_xI15o5I71LI6DA",
+  key_secret: "BKLJiXbjDeYLRyOtuxuenMBW",
 });
 //Middlewares
 app.use(cors());
@@ -32,7 +32,7 @@ app.get("/payments", (req, res) => {
   user_email = req.query.email;
   console.log(user_email);
   res.render("payment", {
-    key: "rzp_test_zJL9AiBPgD6OMg",
+    key: "rzp_test_xI15o5I71LI6DA",
     amount: (req.query.amount+"00"),
     email: user_email,
     mobile: req.query.mobile,
@@ -59,12 +59,12 @@ app.post("/api/payment/verify", (req, res) => {
     .digest("hex");
   console.log("sig" + req.body.razorpay_signature+" "+ req.body.amount);
 
-  var response = { status: "failure" };
-  if (expectedSignature === req.body.razorpay_signature) {
+  //var response = { status: "failure" };
+  //if (expectedSignature === req.body.razorpay_signature) {
 
     VerifyUserMongoDB(user_email, req.body.amount);
-    response = { status: "success" };
-  }
+    var response = { status: "success" };
+  //}
   console.log(response);
 
   res.send(response);
@@ -79,7 +79,7 @@ function VerifyUserMongoDB(email, user_chips) {
   MongoClient.connect(uri, function (err, db) {
     if (err)
       console.log("not connected ");
-    var dbo = db.db("ludofirst");
+    var dbo = db.db("teenpatti");
     var query = { email: email };
     dbo.collection("player").find(query).toArray(function (err, result) {
       if (err) {
@@ -98,7 +98,7 @@ function VerifyUserMongoDB(email, user_chips) {
 }
 function Updated_Chips(email, chips) {
   MongoClient.connect(uri, function (err, db) {
-    var dbo = db.db("ludofirst");
+    var dbo = db.db("teenpatti");
     var myquery = { email: email };
     var newvalues = { $set: { chips: chips } };
     dbo.collection("player").updateOne(myquery, newvalues, function (error, result) {
